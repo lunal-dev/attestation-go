@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"unsafe"
 
-	"lunal-attestation/pkg/attestation" // Replace with your actual module name
-
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"github.com/lunal-dev/attestation-go/attestation"
 )
 
 //export VerifyAttestationFFI
