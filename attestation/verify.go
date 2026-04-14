@@ -25,17 +25,18 @@ var (
 func VerifyAttestation(attestationBytes []byte, format string, nonce []byte, teeNonce []byte) (*pb.MachineState, error) {
 	attestation := &pb.Attestation{}
 
-	if format == "binarypb" {
+	switch format {
+	case "binarypb":
 		err := proto.Unmarshal(attestationBytes, attestation)
 		if err != nil {
 			return nil, fmt.Errorf("fail to unmarshal attestation report: %v", err)
 		}
-	} else if format == "textproto" {
+	case "textproto":
 		err := unmarshalOptions.Unmarshal(attestationBytes, attestation)
 		if err != nil {
 			return nil, fmt.Errorf("fail to unmarshal attestation report: %v", err)
 		}
-	} else {
+	default:
 		return nil, fmt.Errorf("format should be either binarypb or textproto")
 	}
 

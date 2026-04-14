@@ -2,6 +2,7 @@ package attestation
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -68,16 +69,19 @@ func DefaultAttestOptions() AttestOptions {
 }
 
 // Attest creates a remote attestation report based on the provided options
-func Attest(opts AttestOptions) ([]byte, error) {
+func Attest(opts AttestOptions) (out []byte, err error) {
 
 	// Open the TPM device
-	rwc, err := tpm2.OpenTPM()
-	if err != nil {
+	rwc, errO := tpm2.OpenTPM()
+	if errO != nil {
 		return nil, fmt.Errorf("failed to open TPM: %v", err)
 	}
-	defer rwc.Close()
+	defer func() {
+		// we use a named return to avoid loosing the error from closing the TPM
+		err = errors.Join(err, rwc.Close())
+	}()
 
-	if !(opts.Format == "binarypb" || opts.Format == "textproto") {
+	if opts.Format != "binarypb" && opts.Format != "textproto" {
 		return nil, fmt.Errorf("format should be either binarypb or textproto")
 	}
 
@@ -136,7 +140,6 @@ func Attest(opts AttestOptions) ([]byte, error) {
 		attestation.InstanceInfo = instanceInfo
 	}
 
-	var out []byte
 	if opts.Format == "binarypb" {
 		out, err = proto.Marshal(attestation)
 		if err != nil {

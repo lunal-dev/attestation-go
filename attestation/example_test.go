@@ -1,20 +1,21 @@
-package main
+package attestation_test
 
 import (
 	"encoding/base64"
 	"flag"
 	"fmt"
 	"log"
-	"lunal-attestation/pkg/attestation" // Use your actual module path
 	"os"
 
 	pb "github.com/google/go-tpm-tools/proto/attest"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"github.com/lunal-dev/attestation-go/attestation"
 )
 
-func main() {
+func ExampleVerifyAttestation() {
 	// Define command-line flags
-	inputFile := flag.String("file", "attestation.txt", "Path to the base64-encoded attestation file")
+	inputFile := flag.String("file", "testdata/attestation.txt", "Path to the base64-encoded attestation file")
 	verbose := flag.Bool("verbose", false, "Print verbose output")
 	flag.Parse()
 
@@ -50,6 +51,10 @@ func main() {
 	if *verbose {
 		printMachineState(machineState)
 	}
+	// Output:
+	// Successfully decoded 45983 bytes of attestation data
+	// Using nonce from server: fixed-deterministic-nonce-for-server
+	// ✅ Attestation successfully verified!
 }
 
 func printMachineState(machineState *pb.MachineState) {

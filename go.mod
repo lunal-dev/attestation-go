@@ -1,4 +1,4 @@
-module lunal-attestation
+module github.com/lunal-dev/attestation-go
 
 go 1.24.3
 
